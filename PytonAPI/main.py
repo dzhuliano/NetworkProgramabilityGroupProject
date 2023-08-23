@@ -58,3 +58,25 @@ def search_recipes(query):
         return data['results']
     # If the API call is not successful
     return []
+# Route to view a specific recipe with a given recipe ID
+@app.route('/recipe/<int:recipe_id>')
+def view_recipe(recipe_id):
+    # Get the search query from the URL query parameters
+    search_query = request.args.get('search_query', '')
+    # Build the URL to get information about the specific recipe ID from Spoonacular API
+    url = f'https://api.spoonacular.com/recipes/{recipe_id}/information'
+    params = {
+        'apiKey': API_KEY,
+    }
+
+    # Send a GET request to the Spoonacular API to get the recipe information
+    response = requests.get(url, params=params)
+    # If the API call is successful
+    if response.status_code == 200:
+        recipe = response.json()
+        return render_template('view_recipe.html', recipe=recipe, search_query=search_query)
+    return "Recipe not found", 404
+
+# Run the app in debug mode if executed directly
+if __name__ == '__main__':
+    app.run(debug=True)
